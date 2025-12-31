@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-dotenv
+azure-storage-blob
+azure-search-documents
+pypdf
+Pillow
+
+
