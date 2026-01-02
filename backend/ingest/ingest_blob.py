@@ -98,7 +98,6 @@ def read_docx(blob_bytes):
             #print("🧩 Heading detected:", text)
             current_section = text
             paragraph_counter = 0
-            continue
 
         paragraph_counter += 1
 
@@ -127,19 +126,21 @@ def read_xlsx(blob_bytes):
     results = []
 
     for sheet_name in xls.sheet_names:
-        df = pd.read_excel(xls, sheet_name=sheet_name)
+        df = pd.read_excel(xls, sheet_name=sheet_name).fillna("N/A")
 
         for idx, row in df.iterrows():
-            # Convert row into readable text
-            row_text = ", ".join(
-                f"{col}: {row[col]}"
-                for col in df.columns
-                if pd.notna(row[col])
-            )
+           # Create a more robust row string
+            row_parts = []
+            for col in df.columns:
+                val = str(row[col]).strip()
+                # Even if it's N/A, we keep the column context for better search
+                row_parts.append(f"{col}: {val}")
+
+            row_text = f"Sheet: {sheet_name} | Row {idx + 1} | " + " | ".join(row_parts)
 
             results.append({
-                "text": f"Sheet: {sheet_name} | Row {idx + 1} | {row_text}",
-                "page_number": None,          # Excel has no pages
+                "text": row_text,
+                "page_number": None,
                 "sheet_name": sheet_name,
                 "row_number": idx + 1
             })
@@ -177,26 +178,114 @@ def embed_text(text: str) -> list:
 # ==============================
 # INGEST PIPELINE
 # ==============================
+# def ingest_documents():
+#     documents = []
+
+#     blobs = list_blobs(container_client)
+
+#     for blob in blobs:
+#         print(f"📄 Processing {blob.name}")
+#         blob_bytes = download_blob(container_client, blob.name)
+
+#         if blob.name.endswith(".pdf"):
+#             pages = read_pdf(blob_bytes)
+#             images = extract_images_from_pdf(blob_bytes, source_name=blob.name)
+#             # after extracting images
+#             for img in images:
+#                 caption = caption_image(img["image_bytes"])
+#                 vector = embed_text(caption)
+
+#                 blob_path = f"images/{blob.name}/page_{img['page_number']}/{img['file_name']}"
+#                 upload_image(container_client, blob_path, img["image_bytes"])
+
+#                 documents.append({
+#                     "metadata_storage_path": make_safe_key(f"{blob.name}|img|{img['file_name']}"),
+#                     "asset_type": "image",
+#                     "image_blob_path": blob_path,
+#                     "image_caption": caption,
+#                     "image_vector": vector,
+#                     "metadata_storage_name": blob.name,
+#                     "page_number": img["page_number"]})
+#         elif blob.name.endswith(".docx"):
+#             pages = read_docx(blob_bytes)
+#         elif blob.name.endswith(".xlsx"):
+#             pages = read_xlsx(blob_bytes)
+#         else:
+#             print(f"Skipped unsupported file: {blob.name}")
+#             continue
+        
+        
+
+#         for page in pages:
+#             # decide chunking strategy
+#             if blob.name.endswith(".pdf"):
+#                 chunks = chunk_text(page["text"])
+#             else:
+#                 # docx & xlsx: treat one unit as one chunk
+#                 chunks = [page["text"]]
+                
+
+#             for chunk_index, chunk in enumerate(chunks):
+#                 page_no = page.get("page_number")
+
+#                 # Stable key (DO NOT rely on page_number for docx/xlsx)
+#                 if page_no is None:
+#                     raw_key = f"{blob.name}|chunk={chunk_index}"
+#                 else:
+#                     raw_key = f"{blob.name}|page={page_no}|chunk={chunk_index}"
+#                 safe_key = make_safe_key(raw_key)
+
+#                 vector = embed_text(chunk)
+
+#                 document = {
+#                     "metadata_storage_path": safe_key,
+#                     "asset_type": "text",
+#                     "content": chunk,
+#                     "content_vector": vector,
+#                     "metadata_storage_name": blob.name,
+#                     "page_number": page_no
+#                 }
+
+#                 # DOCX metadata
+#                 if page.get("section"):
+#                     document["section"] = page["section"]
+#                 if page.get("paragraph_number"):
+#                     document["paragraph_number"] = page["paragraph_number"]
+
+#                 # XLSX metadata
+#                 if page.get("sheet_name"):
+#                     document["sheet_name"] = page["sheet_name"]
+#                 if page.get("row_number"):
+#                     document["row_number"] = page["row_number"]
+
+#                 documents.append(document)
+
+
+
+
+
+#     print(f"Uploading {len(documents)} chunks to Azure AI Search")
+#     upload_documents(documents)
+
+
 def ingest_documents():
     documents = []
-
     blobs = list_blobs(container_client)
 
     for blob in blobs:
         print(f"📄 Processing {blob.name}")
         blob_bytes = download_blob(container_client, blob.name)
 
+        # 1. READ FILES
         if blob.name.endswith(".pdf"):
             pages = read_pdf(blob_bytes)
+            # Image extraction logic remains the same...
             images = extract_images_from_pdf(blob_bytes, source_name=blob.name)
-            # after extracting images
             for img in images:
                 caption = caption_image(img["image_bytes"])
                 vector = embed_text(caption)
-
                 blob_path = f"images/{blob.name}/page_{img['page_number']}/{img['file_name']}"
                 upload_image(container_client, blob_path, img["image_bytes"])
-
                 documents.append({
                     "metadata_storage_path": make_safe_key(f"{blob.name}|img|{img['file_name']}"),
                     "asset_type": "image",
@@ -204,68 +293,56 @@ def ingest_documents():
                     "image_caption": caption,
                     "image_vector": vector,
                     "metadata_storage_name": blob.name,
-                    "page_number": img["page_number"]})
+                    "page_number": img["page_number"]
+                })
         elif blob.name.endswith(".docx"):
             pages = read_docx(blob_bytes)
         elif blob.name.endswith(".xlsx"):
             pages = read_xlsx(blob_bytes)
         else:
-            print(f"Skipped unsupported file: {blob.name}")
             continue
-        
-        
 
+        # 2. UNIFORM CHUNKING & ENRICHMENT
         for page in pages:
-            # decide chunking strategy
-            if blob.name.endswith(".pdf"):
-                chunks = chunk_text(page["text"])
-            else:
-                # docx & xlsx: treat one unit as one chunk
-                chunks = [page["text"]]
-                
+            base_text = page["text"]
+            
+            # Identify Context (Heading or Sheet Name)
+            context = ""
+            if page.get("section"):
+                context = f"Section: {page['section']} | "
+            elif page.get("sheet_name"):
+                context = f"Sheet: {page['sheet_name']} | "
+
+            # FORCE ALL to use the same chunking settings
+            # This levels the playing field for PDF vs Office
+            chunks = chunk_text(base_text, chunk_size=CHUNK_SIZE, overlap=OVERLAP)
 
             for chunk_index, chunk in enumerate(chunks):
+                # Enrich the chunk text with its context so the vector is stronger
+                enriched_chunk = f"{context}{chunk}"
+                
                 page_no = page.get("page_number")
-
-                # Stable key (DO NOT rely on page_number for docx/xlsx)
-                if page_no is None:
-                    raw_key = f"{blob.name}|chunk={chunk_index}"
-                else:
-                    raw_key = f"{blob.name}|page={page_no}|chunk={chunk_index}"
+                raw_key = f"{blob.name}|{page.get('section', page.get('sheet_name', ''))}|chunk={chunk_index}"
                 safe_key = make_safe_key(raw_key)
 
-                vector = embed_text(chunk)
+                vector = embed_text(enriched_chunk)
 
-                document = {
+                doc_entry = {
                     "metadata_storage_path": safe_key,
                     "asset_type": "text",
-                    "content": chunk,
+                    "content": enriched_chunk, # Store enriched version
                     "content_vector": vector,
                     "metadata_storage_name": blob.name,
-                    "page_number": page_no
+                    "page_number": page_no,
+                    "section": page.get("section"),
+                    "paragraph_number": page.get("paragraph_number"),
+                    "sheet_name": page.get("sheet_name"),
+                    "row_number": page.get("row_number")
                 }
-
-                # DOCX metadata
-                if page.get("section"):
-                    document["section"] = page["section"]
-                if page.get("paragraph_number"):
-                    document["paragraph_number"] = page["paragraph_number"]
-
-                # XLSX metadata
-                if page.get("sheet_name"):
-                    document["sheet_name"] = page["sheet_name"]
-                if page.get("row_number"):
-                    document["row_number"] = page["row_number"]
-
-                documents.append(document)
-
-
-
-
+                documents.append(doc_entry)
 
     print(f"Uploading {len(documents)} chunks to Azure AI Search")
     upload_documents(documents)
-
 
 # ==============================
 # ENTRY POINT
