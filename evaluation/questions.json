@@ -1,0 +1,75 @@
+[
+  {
+    "id": "Q1",
+    "question": "How should lifting operations be carried out safely?",
+    "expected_sources": ["Supervise_Safe_Lifting_Operations.docx"]
+  },
+  {
+    "id": "Q2",
+    "question": "What are the key responsibilities of a lifting supervisor before a lifting operation?",
+    "expected_sources": ["Supervise_Safe_Lifting_Operations.docx"]
+  },
+  {
+    "id": "Q3",
+    "question": "What are the key features of supervise safe lifting operations according to the WSQ competency standard?",
+    "expected_sources": ["Supervise_Safe_Lifting_Operations.docx"]
+  },
+  {
+    "id": "Q4",
+    "question": "What is meant by fatigue in the workplace?",
+    "expected_sources": ["Fatigue_Management_Guidelines.pdf"]
+  },
+  {
+    "id": "Q5",
+    "question": "What are common signs or symptoms of fatigue that supervisors should look out for?",
+    "expected_sources": ["Fatigue_Management_Guidelines.pdf"]
+  },
+  {
+    "id": "Q6",
+    "question": "What factors can contribute to fatigue at the workplace?",
+    "expected_sources": ["Fatigue_Management_Guidelines.pdf"]
+  },
+  {
+    "id": "Q7",
+    "question": "What measures are recommended to manage or reduce fatigue at work?",
+    "expected_sources": ["Fatigue_Management_Guidelines.pdf"]
+  },
+  {
+    "id": "Q8",
+    "question": "What is combustible dust and why is it hazardous?",
+    "expected_sources": ["WSH_Guidelines_Combustible_Dust.pdf"]
+  },
+  {
+    "id": "Q9",
+    "question": "What are common situations where combustible dust explosions may occur?",
+    "expected_sources": ["WSH_Guidelines_Combustible_Dust.pdf"]
+  },
+  {
+    "id": "Q10",
+    "question": "What control measures can be used to reduce the risk of combustible dust incidents?",
+    "expected_sources": ["WSH_Guidelines_Combustible_Dust.pdf"]
+  },
+  {
+    "id": "Q11",
+    "question": "How does the Risk Management Audit Checklist help identify gaps in workplace safety?",
+    "expected_sources": ["Risk_Management_Audit_Checklist.xlsx"]
+  },
+  {
+    "id": "Q12",
+    "question": "Does the Risk Management Audit Checklist specify penalties or enforcement actions for non-compliance?",
+    "expected_sources": ["Risk_Management_Audit_Checklist.xlsx"]
+  },
+  {
+    "id": "Q13",
+    "question": "What types of checks are included in the Risk Management Audit Checklist?",
+    "expected_sources": ["Risk_Management_Audit_Checklist.xlsx"]
+  },
+  {
+    "id": "Q14",
+    "question": "What precautions should be taken during crane lifting activities?",
+    "expected_sources": ["Supervise_Safe_Lifting_Operations.docx"]
+  }
+  
+]
+
+
