@@ -509,6 +509,7 @@ def build_source_metadata(p: dict) -> dict:
         **({"page_number": p["page_number"]} if p.get("page_number") is not None else {}),
         **({"section": p["section"]} if p.get("section") else {}),
         **({"paragraph_number": p["paragraph_number"]} if p.get("paragraph_number") else {}),
+        **({"caption": p["caption"]} if p.get("caption") else {}),
         **({"image_path": p["image_path"]} if p.get("image_path") else {})
     }
 
