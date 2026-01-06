@@ -2,9 +2,12 @@
 # Virtual environment
 venv/
 __pycache__/
+.venv/
 
 # Environment variables
 .env
+
+
 
 # Python cache
 *.pyc
