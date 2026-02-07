@@ -9,7 +9,7 @@ from azure.core.credentials import AzureKeyCredential
 from dotenv import load_dotenv
 from pathlib import Path
 import os
-
+import re
 
 endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
 key = os.getenv("AZURE_SEARCH_KEY")
@@ -24,40 +24,6 @@ search_client = SearchClient(
     index_name=index_name,
     credential=AzureKeyCredential(key)
 )
-
-
-
-# def search_documents(query: str, top_k: int = 5):
-#     results = search_client.search(
-#         search_text=query,
-#         top=top_k
-#     )
-
-#     docs = []
-#     for r in results:
-#         docs.append({
-#             "content": r.get("content", ""),
-#             "source": r.get("metadata_storage_path", ""),
-#             "score": r["@search.score"]
-#         })
-
-#     return docs
-
-# def search_pages(query: str, top_k: int = 5):
-#     results = search_client.search(search_text=query, top=top_k)
-
-#     docs = []
-#     for r in results:
-#         docs.append({
-#             "content": r.get("content", ""),
-#             "source_file": r.get("metadata_storage_name", ""),
-#             "source_path": r.get("metadata_storage_path", ""),
-#             "page_number": extract_page(r.get("metadata_storage_path", "")),
-#             "score": r["@search.score"]
-#         })
-#     return docs
-
-import re
 
 def extract_page(path: str):
     match = re.search(r"page=(\d+)", path)
@@ -80,50 +46,6 @@ def upload_documents(documents, batch_size=100):
             raise Exception("Azure Search batch upload failed")
 
         print(f"✅ Uploaded batch {i // batch_size + 1}")
-
-# ==============================
-# VECTOR SEARCH
-# ==============================
-# def vector_search(
-#     query_vector: list,
-#     top_k: int = 5
-# ):
-#     """
-#     Perform vector similarity search on content_vector
-#     """
-
-#     results = search_client.search(
-#         search_text="*",   # IMPORTANT: disable keyword search
-#         vector_queries=[
-#             {
-#                 "kind": "vector",
-#                 "vector": query_vector,
-#                 "fields": "content_vector",
-#                 "k": top_k
-#             }
-#         ],
-#         select=[
-#             "content",
-#             "metadata_storage_name",
-#             "metadata_storage_path",
-#             "page_number",
-#             "section",
-#             "paragraph_number"
-#         ]
-#     )
-
-    # docs = []
-    # for r in results:
-    #     docs.append({
-    #         "content": r["content"],
-    #         "source_file": r.get("metadata_storage_name"),
-    #         "page_number": r.get("page_number"),
-    #         "section": r.get("section"),
-    #         "paragraph_number": r.get("paragraph_number"),
-    #         "score": r["@search.score"]
-    #     })
-
-    # return docs
 
 def vector_search_text(query_vector: list, top_k: int = 5):
     results = search_client.search(

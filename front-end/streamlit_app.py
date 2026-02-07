@@ -205,7 +205,7 @@ for conv_id, messages in list(st.session_state.conversations.items()):
 # ======================================================
 # MAIN UI
 # ======================================================
-st.title("🦺 WSH SOP RAG Chatbot")
+st.title("🦺 SOP Query AI Chatbot")
 st.caption("Workplace Safety & Health SOP Question Answering System")
 st.divider()
 
@@ -238,6 +238,10 @@ if query:
         "role": "user",
         "content": query
     })
+
+    # SHOW user message immediately
+    with st.chat_message("user"):
+        st.markdown(query)
 
     # ==============================
     # Global loading indicator
