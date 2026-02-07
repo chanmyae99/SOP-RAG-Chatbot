@@ -9,7 +9,7 @@ load_dotenv()
 # PAGE CONFIG
 # ======================================================
 st.set_page_config(
-    page_title="WSH SOP RAG Chatbot",
+    page_title="SOP QUERY AI Chatbot",
     layout="wide"
 )
 
@@ -19,7 +19,8 @@ BLOB_BASE_URL = "https://wshragsopstorage.blob.core.windows.net/wsh-documents"
 BLOB_SAS_TOKEN = os.getenv("BLOB_SAS_TOKEN")
 
 
-RAG_API_URL = "http://localhost:8000/ask"
+RAG_API_URL = "https://f07b-42-61-142-232.ngrok-free.app/ask"
+
 USE_RAG = True
 
 
