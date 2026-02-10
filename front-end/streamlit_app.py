@@ -19,7 +19,7 @@ BLOB_BASE_URL = "https://wshragsopstorage.blob.core.windows.net/wsh-documents"
 BLOB_SAS_TOKEN = os.getenv("BLOB_SAS_TOKEN")
 
 
-RAG_API_URL = "https://7a55-202-12-94-240.ngrok-free.app/ask"
+RAG_API_URL = "https://c402-14-100-82-94.ngrok-free.app/ask"
 
 USE_RAG = True
 
