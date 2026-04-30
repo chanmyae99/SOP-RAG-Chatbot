@@ -48,6 +48,9 @@ The system prioritizes **accuracy, traceability, and safety**.
 
 ## 🏗️ System Architecture
 
+<img width="895" height="606" alt="image" src="https://github.com/user-attachments/assets/f7172f1b-df4c-4696-aeb1-4eee42674199" />
+
+
 ### 1. Document Indexing (Offline)
 - Upload documents to storage  
 - Split into structured chunks  
@@ -92,3 +95,38 @@ The system demonstrates strong retrieval accuracy and reliability for SOP-based 
 ---
 
 ## 📂 Project Structure
+
+```text
+├── backend/                # FastAPI backend + RAG pipeline
+│   ├── ingest/             # Document ingestion & preprocessing
+│   ├── services/           # Retrieval + generation logic
+│   ├── app.py              # Main backend entry point
+│   ├── test_openai.py      # OpenAI test script
+│   └── requirements.txt    # Backend dependencies
+│
+├── front-end/              # Streamlit frontend
+│   ├── streamlit_app.py    # UI application
+│   └── requirements.txt    # Frontend dependencies
+│
+├── evaluation/             # Evaluation scripts
+│   ├── retrieval_eval.py   # Precision@5 evaluation
+│   ├── faithfulness_eval.py# LLM-as-judge evaluation
+│   ├── run_eval.py         # Run evaluation pipeline
+│   └── questions.json      # Evaluation dataset
+│
+├── .gitignore              # Ignore sensitive files
+└── README.md               # Project documentation
+
+---
+
+## ⚡ Quick Start
+
+```bash
+git clone https://github.com/your-username/SOP-RAG-Chatbot.git
+cd SOP-RAG-Chatbot/backend && pip install -r requirements.txt && uvicorn app:app --reload
+cd ../front-end && pip install -r requirements.txt && streamlit run streamlit_app.py
+
+
+
+
+
